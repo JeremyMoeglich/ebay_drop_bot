@@ -3,6 +3,7 @@ import { authenticate_oauth } from "./oauth";
 import { ContentLanguage } from "ebay-api/lib/enums";
 import { chunk } from "lodash-es";
 import { promises as fs } from "fs";
+import { read_or_undefined } from "../utils";
 
 export async function get_client() {
     const ebay = eBayApi.fromEnv();
@@ -12,7 +13,7 @@ export async function get_client() {
     await authenticate_oauth(ebay);
     {
         const already_migrated = (
-            await fs.readFile("migrated_products.txt", "utf8")
+            (await read_or_undefined("migrated_products.txt")) ?? ""
         )
             .split("\n")
             .map((x) => x.trim());
