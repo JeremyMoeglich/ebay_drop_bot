@@ -55,7 +55,7 @@ export async function generate_email(
         <body style="font-family: Arial, Helvetica, sans-serif; font-size: 15px">
             <p>Hallo,</p>
             <p>bitte den folgenden Artikel an den Kunden rausschicken.</p>
-            <h1>Bestellung ${order.orderId} von ${anschrift.name}</h1>
+            <h1>Bestellung von ${anschrift.name}</h1>
             <div>
                 <h2>Artikel</h2>
                 <ul style="list-style-type: none; padding-left: 10px">
@@ -92,8 +92,8 @@ export async function generate_email(
     `;
     const subject = `Neue TAGARO eBay Bestellung - ${anschrift.name} - Artikelnr. ${article.id}`;
     return {
-        //to: ["tagaro.medien@web.de", "tarnold@atelmo.com"],
-        to: "jeremy@moeglich.dev",
+        to: ["tagaro.medien@web.de", "tarnold@atelmo.com"],
+        //to: "jeremy@moeglich.dev",
         subject,
         body: html,
         source: `Ebay Bestellung ${anschrift.name} - ${order.orderId}`,

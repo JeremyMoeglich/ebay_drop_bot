@@ -85,17 +85,14 @@ export async function send_emails(emails: Email[]) {
 
     try {
         for (const email of emails) {
-            for (const receiver in email.to instanceof Array
-                ? email.to
-                : [email.to]) {
-                await transporter.sendMail({
-                    from: sender_email,
-                    to: receiver,
-                    subject: email.subject,
-                    html: email.body,
-                    text: htmlToText(email.body),
-                });
-            }
+            await transporter.sendMail({
+                from: sender_email,
+                to: email.to,
+                subject: email.subject,
+                html: email.body,
+                text: htmlToText(email.body),
+            });
+
             await addDoc(email_log, {
                 email:
                     email.to instanceof Array ? email.to.join(", ") : email.to,

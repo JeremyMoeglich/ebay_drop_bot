@@ -33,14 +33,6 @@ const day_lookback = 1;
 (async () => {
     await init_firebase();
     try {
-        {
-            // log in firebase
-            await setDoc(activity_document, {
-                last: new Date(),
-                delay: minute_delay,
-                active: true,
-            });
-        }
         previous_orders = file_exists(previous_orders_path)
             ? (await fs.readFile(previous_orders_path, "utf8"))
                   .split("\n")
@@ -52,10 +44,16 @@ const day_lookback = 1;
         previous_orders = previous_orders.concat(
             (await get_valid_orders(ebay, day_lookback)).map((x) => x.orderId)
         );
+        console.log("Started");
         while (true) {
             const new_orders = (
                 await get_valid_orders(ebay, day_lookback)
             ).filter((x) => !previous_orders.includes(x.orderId));
+            await setDoc(activity_document, {
+                last: new Date(),
+                delay: minute_delay,
+                active: true,
+            });
             if (new_orders.length !== 0) {
                 console.log(`Got ${new_orders.length} new orders`);
                 const new_order_ids = new_orders.map((x) => x.orderId);

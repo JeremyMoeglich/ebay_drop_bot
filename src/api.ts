@@ -28,7 +28,7 @@ export async function get_valid_orders(ebay: eBayApi, day_offset: number) {
                     return !v;
                 }
             ) &&
-            order.lineItems[0]?.sku
+            !!order.lineItems[0]?.sku
     );
 }
 
