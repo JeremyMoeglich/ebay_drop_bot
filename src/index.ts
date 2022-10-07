@@ -42,13 +42,20 @@ const day_lookback = 1;
         const ebay = await get_client();
 
         previous_orders = previous_orders.concat(
-            (await get_valid_orders(ebay, day_lookback)).map((x) => x.orderId)
+            (await get_valid_orders(ebay, day_lookback + 10)).map(
+                (x) => x.orderId
+            )
+        )
+        await fs.writeFile(
+            previous_orders_path,
+            [...new Set(previous_orders)].join("\n")
         );
         console.log("Started");
         while (true) {
-            const new_orders = (
-                await get_valid_orders(ebay, day_lookback)
-            ).filter((x) => !previous_orders.includes(x.orderId));
+            const valid_orders = await get_valid_orders(ebay, day_lookback);
+            const new_orders = valid_orders.filter(
+                (x) => !previous_orders.includes(x.orderId)
+            );
             await setDoc(activity_document, {
                 last: new Date(),
                 delay: minute_delay,

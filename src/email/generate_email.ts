@@ -42,8 +42,13 @@ export async function generate_email(
     const anschrift = {
         name: shipTo.fullName,
         street: shipTo.contactAddress.addressLine2
-            ? `Adresse1: ${shipTo.contactAddress.addressLine1}\nAdresse2: ${shipTo.contactAddress.addressLine2}`
-            : shipTo.contactAddress.addressLine1,
+            ? /*html*/ `
+                <li>${shipTo.contactAddress.addressLine1}</li>
+                <li>${shipTo.contactAddress.addressLine2}</li>
+            `
+            : /*html*/ `
+                <li>${shipTo.contactAddress.addressLine1}</li>
+            `,
         city: `${shipTo.contactAddress.postalCode} ${shipTo.contactAddress.city}`,
         country:
             shipTo.contactAddress.countryCode === "DE"
@@ -62,8 +67,8 @@ export async function generate_email(
                     <li>${article.id}</li>
                     ${
                         article.amount > 1
-                            ? `<li style="color: red; font-weight: bold;">${article.amount} Stück bestellt!</li><li>${article.name}</li>`
-                            : `<li>${article.amount}x ${article.name}</li>`
+                            ? /*html*/ `<li style="color: red; font-weight: bold;">${article.amount} Stück bestellt!</li><li>${article.name}</li>`
+                            : /*html*/ `<li>${article.amount}x ${article.name}</li>`
                     }
                     
                 </ul>
@@ -72,12 +77,22 @@ export async function generate_email(
                 <h2>Anschrift</h2>
                 <ul style="list-style-type: none; padding-left: 10px">
                     <li>${anschrift.name}</li>
-                    <li>${anschrift.street}</li>
+                    ${anschrift.street}
                     <li>${anschrift.city}</li>
                     <li>${anschrift.country}</li>
                     <li>${anschrift.phone}</li>
                 </ul>
             </div>
+            ${
+                order.buyerCheckoutNotes
+                    ? /*html*/ `
+                <div>
+                    <h2>Kundenanmerkungen</h2>
+                    <p>${order.buyerCheckoutNotes}</p>
+                </div>
+                `
+                    : ""
+            }
             <p>
                 Dies ist eine automatische Bestell-Email. Bei Notwendigkeit bitte über
                 Skype melden.

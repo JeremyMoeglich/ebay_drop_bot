@@ -47,7 +47,9 @@ export async function send_emails(emails: Email[]) {
             if (email.source === "") {
                 throw new Error("Email source is empty");
             }
-            z.string().email().parse(email.to);
+            z.union([z.string().email(), z.array(z.string().email())]).parse(
+                email.to
+            );
             {
                 // html validation
                 const result = await w3cHtmlValidator.validate({

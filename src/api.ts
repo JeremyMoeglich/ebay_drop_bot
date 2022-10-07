@@ -2,15 +2,13 @@ import eBayApi from "ebay-api/lib";
 import { pipe } from "functional-utilities";
 import { z } from "zod";
 import { item_schema, order_schema } from "./schemas";
+import { promises as fs } from "fs";
 
 export async function get_recent_orders(ebay: eBayApi, day_offset: number) {
     const time_offset = day_offset * 24 * 60 * 60 * 1000;
     const start_time = new Date(Date.now() - time_offset);
     const data = await ebay.sell.fulfillment.getOrders({
-        filter: [
-            `lastmodifieddate:[${start_time.toISOString()}..]`,
-            "orderfulfillmentstatus:{FULFILLED|IN_PROGRESS}",
-        ].join(","),
+        filter: [`lastmodifieddate:[${start_time.toISOString()}..]`].join(","),
     });
     return z.array(order_schema).parse(data.orders);
 }

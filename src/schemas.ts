@@ -40,6 +40,7 @@ export const order_schema = z
                     .object({
                         postalCode: z.string(),
                         countryCode: language_schema,
+                        stateOrProvince: z.string().optional(),
                     })
                     .strict(),
             })
@@ -55,6 +56,7 @@ export const order_schema = z
             .object({
                 cancelState: z.string(),
                 cancelRequests: z.array(z.unknown()),
+                cancelledDate: z.string().optional(),
             })
             .strict(),
         paymentSummary: z
@@ -76,7 +78,9 @@ export const order_schema = z
                                             holdReason: z.string(),
                                             holdAmount: cost_schema,
                                             holdState: z.string(),
-                                            expectedReleaseDate: z.string(),
+                                            expectedReleaseDate: z
+                                                .string()
+                                                .optional(),
                                         })
                                         .strict()
                                 )
@@ -105,6 +109,9 @@ export const order_schema = z
                                             city: z.string(),
                                             postalCode: z.string(),
                                             countryCode: language_schema,
+                                            stateOrProvince: z
+                                                .string()
+                                                .optional(),
                                         })
                                         .strict(),
                                     primaryPhone: z
@@ -166,6 +173,7 @@ export const order_schema = z
                             postalCode: z.string(),
                         })
                         .strict(),
+                    refunds: z.unknown(),
                 })
                 .strict()
         ),
