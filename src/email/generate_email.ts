@@ -3,6 +3,7 @@ import { error, pipe } from "functional-utilities";
 import { get_item } from "../api";
 import { Order } from "../schemas";
 import { Email } from "./send_email";
+import { minify } from "html-minifier";
 
 export async function generate_email(
     ebay: eBayApi,
@@ -63,34 +64,33 @@ export async function generate_email(
             <h1>Bestellung von ${anschrift.name}</h1>
             <div>
                 <h2>Artikel</h2>
-                <ul style="list-style-type: none; padding-left: 10px">
-                    <li>${article.id}</li>
+                <div style="padding-left: 10px">
+                    <p style="margin: 0;">${article.id}</p>
                     ${
                         article.amount > 1
-                            ? /*html*/ `<li style="color: red; font-weight: bold;">${article.amount} Stück bestellt!</li><li>${article.name}</li>`
-                            : /*html*/ `<li>${article.amount}x ${article.name}</li>`
+                            ? /*html*/ `<p style="color: red; font-weight: bold; margin: 0;">${article.amount} Stück bestellt!</p><p>${article.name}</p>`
+                            : /*html*/ `<p style="margin: 0;">${article.amount}x ${article.name}</p>`
                     }
-                    
-                </ul>
+                </div>
             </div>
             <div>
                 <h2>Anschrift</h2>
-                <ul style="list-style-type: none; padding-left: 10px">
-                    <li>${anschrift.name}</li>
+                <div style="padding-left: 10px">
+                    <p style="margin: 0;">${anschrift.name}</p>
                     ${anschrift.street}
-                    <li>${anschrift.city}</li>
-                    <li>${anschrift.country}</li>
-                    <li>${anschrift.phone}</li>
-                </ul>
+                    <p style="margin: 0;">${anschrift.city}</p>
+                    <p style="margin: 0;">${anschrift.country}</p>
+                    <p style="margin: 0;">${anschrift.phone}</p>
+                </div>
             </div>
             ${
                 order.buyerCheckoutNotes
                     ? /*html*/ `
-                <div>
-                    <h2>Kundenanmerkungen</h2>
-                    <p>${order.buyerCheckoutNotes}</p>
-                </div>
-                `
+                        <div>
+                            <h2>Kundenanmerkungen</h2>
+                            <p>${order.buyerCheckoutNotes}</p>
+                        </div>
+                    `
                     : ""
             }
             <p>
@@ -110,7 +110,15 @@ export async function generate_email(
         to: ["tagaro.medien@web.de", "tarnold@atelmo.com"],
         //to: "jeremy@moeglich.dev",
         subject,
-        body: html,
+        body: minify(html, {
+            collapseWhitespace: true,
+            removeComments: true,
+            removeEmptyAttributes: true,
+            removeEmptyElements: true,
+            removeRedundantAttributes: true,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true,
+        }),
         source: `Ebay Bestellung ${anschrift.name} - ${order.orderId}`,
     };
 }
